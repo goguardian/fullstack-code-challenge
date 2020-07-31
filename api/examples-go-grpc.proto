@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package gogrpc;
+
+import "google/api/annotations.proto";
+
+service FullstackCodeChallenge {
+  // Returns details of all GoGuardian Classrooms.
+  rpc GetClassroomsAndStudents(GetClassroomsAndStudentsRequest) returns (GetClassroomsAndStudentsResponse) {
+    option (google.api.http) = {
+      get: "/v1/classrooms"
+    };
+  }
+}
+
+message GetClassroomsAndStudentsRequest {
+  repeated uint32 classroomIDs = 1;
+}
+
+message GetClassroomsAndStudentsResponse {
+  map<uint32, Classroom> classrooms = 1;
+}
+
+message Student {
+  uint32 id = 1;
+  string name = 2;
+}
+
+message Classroom {
+  uint32 id = 1;
+  string name = 2;
+  repeated Student students = 3;
+}
