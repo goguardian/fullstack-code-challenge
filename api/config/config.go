@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 // Config represents the runtime configuration for the service.
@@ -21,6 +22,9 @@ type configuration struct {
 
 func init() {
 	Config = &configuration{
+		DatabaseAddress:     getEnvOrDefault("DATABASE_ADDRESS", ""),
+		DatabaseReadTimeout: strconv.Atoi(getEnvOrDefault("DATABASE_READ_TIMEOUT", "10")),
+
 		GRPCListenAddress: getEnvOrDefault("GRPC_LISTEN_ADDRESS", "grpc://fullstack-code-challenge"),
 		GRPCListenPort:    uint(getEnvIntOrDefault("GRPC_LISTEN_PORT", 8889)),
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	gw "proto/services/gateways/examples-go-grpc"
+	gw "proto/fullstack-code-challenge"
 )
 
 func (s *service) GetClassroomsAndStudents(ctx context.Context, req *gw.GetClassroomsAndStudentsRequest) (*gw.GetClassroomsAndStudentsResponse, error) {

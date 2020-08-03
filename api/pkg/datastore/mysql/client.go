@@ -1,11 +1,11 @@
-package gocoreapi
+package mysql
 
 import (
 	"context"
 	"database/sql"
 	"time"
 
-	"github.com/goguardian/Development/services/examples/go-grpc/pkg/datastore"
+	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/metadata"
 )

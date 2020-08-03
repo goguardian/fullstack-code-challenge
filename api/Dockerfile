@@ -6,6 +6,6 @@ FROM 476415093293.dkr.ecr.us-west-2.amazonaws.com/goguardian/vault_base
 ADD zoneinfo.zip /
 ENV ZONEINFO /zoneinfo.zip
 
-ADD go-grpc /
+ADD api /
 
-CMD ["/go-grpc"]
+CMD ["/api"]

@@ -3,14 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/goguardian/Development/golang/ggg/jl"
-	srsclient "github.com/goguardian/Development/golang/ggg/srs/client"
-
-	"github.com/goguardian/Development/services/examples/go-grpc/config"
-	gocoreapi "github.com/goguardian/Development/services/examples/go-grpc/pkg/datastore/go-core-api"
-	"github.com/goguardian/Development/services/examples/go-grpc/service"
-	"github.com/goguardian/Development/services/examples/go-grpc/transport/grpc"
-	"github.com/goguardian/Development/services/examples/go-grpc/transport/http"
+	"github.com/goguardian/fullstack-code-challenge/api/config"
+	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore/mysql"
+	"github.com/goguardian/fullstack-code-challenge/api/service"
+	"github.com/goguardian/fullstack-code-challenge/api/transport/grpc"
+	"github.com/goguardian/fullstack-code-challenge/api/transport/http"
 )
 
 func main() {
@@ -24,15 +21,14 @@ func main() {
 	}()
 
 	log.Println("Creating SRS client")
-	srsClient, err := srsclient.New()
 	if err != nil {
 		return
 	}
 
 	logger.Info("Creating datastore client")
-	datastoreClient, err := gocoreapi.New(&gocoreapi.Config{
+	datastoreClient, err := mysql.New(&mysql.Config{
 		DatabaseAddress: conf.DatabaseAddress,
-		ReadTimeout:     conf.GoCoreAPIReadTimeout,
+		ReadTimeout:     conf.DatabaseReadTimeout,
 	})
 	if err != nil {
 		return
@@ -59,9 +55,7 @@ func main() {
 		log.Fatal(httpListener.Listen())
 	}()
 
-	logger.WithFields(jl.Fields{
-		"grpc_listen_address": conf.GRPCListenAddress,
-	}).Info("Creating gRPC listener")
+	log.Println("Creating gRPC listener")
 	grpcListener, err := grpc.New(&grpc.Config{
 		GRPCListenAddress: conf.GRPCListenAddress,
 		GRPCListenPort:    conf.GRPCListenPort,

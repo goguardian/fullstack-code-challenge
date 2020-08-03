@@ -2,6 +2,34 @@ version: '3'
 
 services:
 
+  api:
+    image: 476415093293.dkr.ecr.us-west-2.amazonaws.com/goguardian/golang_build_v2
+    ports:
+      - 8889:8889/tcp # gRPC
+      - 8890:8890/tcp # HTTP (HC)
+    environment:
+      - AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY
+      - DATABASE_ADDRESS=
+      - DISABLE_VAULT=1
+      - ENVIRONMENT=docker-compose
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    volumes:
+      - /liminex/go.mod:/liminex/go.mod
+      - /liminex/go.sum:/liminex/go.sum
+      - /liminex/golang/proto:/liminex/golang/proto:cached
+      - /liminex/golang/ggg:/liminex/golang/ggg:cached
+      - /liminex/golang/proto:/liminex/golang/proto:cached
+      - /liminex/services/examples/go-grpc:/liminex/services/examples/go-grpc:consistent
+    working_dir: ./api
+    # Use during active development
+    command: bash -c "go get github.com/pilu/fresh && /liminex/golang/bin/fresh -c ./fresh.conf"
+    # Use otherwise
+    # command: bash -c "go build -mod=readonly && ./fullstack-code-challenge"
+
   mysql:
     image: mysql:5.7
     ports:

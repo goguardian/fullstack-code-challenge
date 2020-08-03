@@ -2,10 +2,11 @@ package grpc
 
 import (
 	"errors"
+	"fmt"
 	"math"
-	gw "proto/services/gateways/examples-go-grpc"
+	"net"
+	gw "proto/fullstack-code-challenge"
 
-	srsserver "github.com/goguardian/Development/golang/ggg/srs/server"
 	"google.golang.org/grpc"
 )
 
@@ -54,16 +55,21 @@ type listener struct {
 }
 
 func (l *listener) Listen() error {
-	listener, err := srsserver.GetTCPListener(l.grpcListenAddress, l.grpcListenPort)
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", l.grpcListenPort))
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	// if err = registerService(l.grpcListenAddress, l.grpcListenPort); err != nil {
+	// 	return nil, err
+	// }
 
 	grpcServerOptions := []grpc.ServerOption{
 		grpc.MaxConcurrentStreams(math.MaxUint32),
 	}
 
-	grpcServe := srsserver.GetGRPCServer(grpcServerOptions...)
+	// grpcServe := srsserver.GetGRPCServer(grpcServerOptions...)
+	grpcServe := grpc.NewServer(gprcOptions...)
 
 	gw.RegisterGoGRPCServer(grpcServe, l)
 

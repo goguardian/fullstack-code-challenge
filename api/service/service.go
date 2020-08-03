@@ -4,7 +4,7 @@ import (
 	"errors"
 	gw "proto/services/gateways/examples-go-grpc"
 
-	"github.com/goguardian/Development/services/examples/go-grpc/pkg/datastore"
+	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore"
 )
 
 // Config represents the configuration for a service instance.
