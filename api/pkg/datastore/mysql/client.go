@@ -3,11 +3,11 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore"
 	"github.com/pkg/errors"
-	"google.golang.org/grpc/metadata"
 )
 
 // Config represents the configuration for a datastore client
@@ -25,7 +25,6 @@ func New(conf *Config) (datastore.Client, error) {
 		return nil, errors.New("invalid read timeout")
 	}
 
-	// Create sql client here
 	mysqlClient, err := sql.Open("mysql", conf.DatabaseAddress)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating MySQL client")
@@ -38,13 +37,11 @@ func New(conf *Config) (datastore.Client, error) {
 }
 
 type client struct {
-	mysqlClient pb.GoCoreAPIClient
+	mysqlClient *sql.DB
 	readTimeout time.Duration
 }
 
-func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []uint32) ([]datastore.Classroom, error) {
-
-	classrooms := []datastore.Classroom{}
+func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []uint64) ([]datastore.Classroom, error) {
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, c.readTimeout)
 	defer cancel()
@@ -67,6 +64,7 @@ func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []u
 
 	rows, err := c.mysqlClient.QueryContext(
 		timeoutCtx,
+		query,
 		classroomIDs,
 	)
 	if err != nil {
@@ -74,8 +72,8 @@ func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []u
 	}
 	defer rows.Close()
 
-	classroomsMap = make(map[int32]string)
-	classroomStudentsMap = make(map[int32][]datastore.Student)
+	classroomsMap := make(map[int32]string)
+	classroomStudentsMap := make(map[int32][]datastore.Student)
 	for rows.Next() {
 		var classroomID int32
 		var studentID int32
@@ -90,25 +88,25 @@ func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []u
 
 		if students, found := classroomStudentsMap[classroomID]; found {
 			students = append(students, datastore.Student{
-				ID: studentID,
+				ID:   uint64(studentID),
 				Name: studentName,
 			})
 		} else {
-			classroomStudentsMap[classroomID] := make[]datastore.Student{
+			classroomStudentsMap[classroomID] = []datastore.Student{
 				datastore.Student{
-					ID: studentID,
+					ID:   uint64(studentID),
 					Name: studentName,
-				}
+				},
 			}
 		}
 	}
 
 	var classrooms []datastore.Classroom
-	for classroomID, students := range classroomStudents {
+	for classroomID, students := range classroomStudentsMap {
 		classrooms = append(classrooms, datastore.Classroom{
-			ID:   uint32(classroomID),
-			Name: classroomsMap[classroomID],
-			Students: students
+			ID:       uint32(classroomID),
+			Name:     classroomsMap[classroomID],
+			Students: students,
 		})
 	}
 

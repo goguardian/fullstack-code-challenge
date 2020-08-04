@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"math"
 	"net"
-	gw "proto/fullstack-code-challenge"
+
+	gw "github.com/goguardian/fullstack-code-challenge/proto/gen/go/fullstack_code_challenge/v1"
 
 	"google.golang.org/grpc"
 )
@@ -14,7 +15,7 @@ import (
 type Config struct {
 	GRPCListenAddress string
 	GRPCListenPort    uint
-	Server            gw.GoGRPCServer
+	Server            gw.FullstackCodeChallengeServer
 	ServiceName       string
 }
 
@@ -39,15 +40,15 @@ func New(conf *Config) (Listener, error) {
 	}
 
 	return &listener{
-		grpcListenAddress: conf.GRPCListenAddress,
-		grpcListenPort:    conf.GRPCListenPort,
-		serviceName:       conf.ServiceName,
-		GoGRPCServer:      conf.Server,
+		grpcListenAddress:            conf.GRPCListenAddress,
+		grpcListenPort:               conf.GRPCListenPort,
+		serviceName:                  conf.ServiceName,
+		FullstackCodeChallengeServer: conf.Server,
 	}, nil
 }
 
 type listener struct {
-	gw.GoGRPCServer
+	gw.FullstackCodeChallengeServer
 
 	grpcListenAddress string
 	grpcListenPort    uint
@@ -57,7 +58,7 @@ type listener struct {
 func (l *listener) Listen() error {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", l.grpcListenPort))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// if err = registerService(l.grpcListenAddress, l.grpcListenPort); err != nil {
@@ -69,9 +70,9 @@ func (l *listener) Listen() error {
 	}
 
 	// grpcServe := srsserver.GetGRPCServer(grpcServerOptions...)
-	grpcServe := grpc.NewServer(gprcOptions...)
+	grpcServe := grpc.NewServer(grpcServerOptions...)
 
-	gw.RegisterGoGRPCServer(grpcServe, l)
+	gw.RegisterFullstackCodeChallengeServer(grpcServe, l)
 
 	return grpcServe.Serve(listener)
 }

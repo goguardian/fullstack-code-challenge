@@ -5,7 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	gw "proto/fullstack-code-challenge"
+
+	gw "github.com/goguardian/fullstack-code-challenge/api/proto/gen/go/fullstack_code_challenge/v1"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
@@ -58,7 +59,7 @@ func (l *listener) Listen() error {
 	localGRPCAddress := fmt.Sprintf("127.0.0.1:%d", l.grpcListenPort)
 
 	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := gw.RegisterGoGRPCHandlerFromEndpoint(ctx, gmux, localGRPCAddress, opts)
+	err := gw.RegisterFullstackCodeChallengeHandlerFromEndpoint(ctx, gmux, localGRPCAddress, opts)
 	if err != nil {
 		return err
 	}

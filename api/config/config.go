@@ -10,6 +10,9 @@ import (
 var Config *configuration
 
 type configuration struct {
+	DatabaseAddress     string
+	DatabaseReadTimeout int
+
 	GRPCListenPort    uint
 	GRPCListenAddress string
 
@@ -23,7 +26,7 @@ type configuration struct {
 func init() {
 	Config = &configuration{
 		DatabaseAddress:     getEnvOrDefault("DATABASE_ADDRESS", ""),
-		DatabaseReadTimeout: strconv.Atoi(getEnvOrDefault("DATABASE_READ_TIMEOUT", "10")),
+		DatabaseReadTimeout: getEnvIntOrDefault("DATABASE_READ_TIMEOUT", 10),
 
 		GRPCListenAddress: getEnvOrDefault("GRPC_LISTEN_ADDRESS", "grpc://fullstack-code-challenge"),
 		GRPCListenPort:    uint(getEnvIntOrDefault("GRPC_LISTEN_PORT", 8889)),
@@ -42,6 +45,16 @@ func init() {
 func getEnvOrDefault(variable string, defaultValue string) string {
 	if val := os.Getenv(variable); val != "" {
 		return val
+	}
+
+	return defaultValue
+}
+
+func getEnvIntOrDefault(variable string, defaultValue int) int {
+	if val := os.Getenv(variable); val != "" {
+		if intVal, err := strconv.Atoi(val); err == nil {
+			return intVal
+		}
 	}
 
 	return defaultValue

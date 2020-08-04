@@ -2,7 +2,8 @@ package service
 
 import (
 	"errors"
-	gw "proto/services/gateways/examples-go-grpc"
+
+	gw "github.com/goguardian/fullstack-code-challenge/proto/gen/go/fullstack_code_challenge/v1"
 
 	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore"
 )
@@ -13,7 +14,7 @@ type Config struct {
 }
 
 // New creates and returns a new service instance.
-func New(conf *Config) (gw.GoGRPCServer, error) {
+func New(conf *Config) (gw.FullstackCodeChallengeServer, error) {
 	if conf.DatastoreClient == nil {
 		return nil, errors.New("invalid datastore client")
 	}

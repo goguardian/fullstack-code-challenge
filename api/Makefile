@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 BUILD_DIR := $(HOME)/fullstack-code-challenge/api
-GENERATED_DIR := $(HOME)/fullstack-code-challenge/generated
+GENERATED_DIR := $(HOME)/fullstack-code-challenge/api/proto
 GW_DIR := $(GENERATED_DIR)/gateways
 PROTO_DIR := $(HOME)/fullstack-code-challenge/proto
 MODULE_DEPS_DIR := ../module-dependencies
@@ -22,10 +22,11 @@ deps:
 grpc: clean
 		$(info --- Building gRPC service definitions) \
 		cd $(MODULE_DEPS_DIR) && \
+		mkdir -p "$(GENERATED_DIR)" && \
 		protoc \
 			-I=$(PROTO_DIR) \
 			-I=$(PROTO_DIR)/third-party \
-			--go_out=plugins=grpc:"$(HOME)/fullstack-code-challenge/generated" \
+			--go_out=plugins=grpc:"$(GENERATED_DIR)" \
 			--swagger_out=logtostderr=true:"$(GENERATED_DIR)" \
 			$(PROTO_DIR)/fullstack-code-challenge.proto && \
 		\
@@ -38,7 +39,7 @@ grpc: clean
 			$(PROTO_DIR)/fullstack-code-challenge.proto
 
 clean:
-	rm -rf $(GENERATED_DIR)/*
+	rm -rf $(GENERATED_DIR)
 
 install: deps grpc
 
