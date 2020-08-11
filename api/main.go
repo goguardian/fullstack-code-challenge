@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/goguardian/fullstack-code-challenge/api/config"
 	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore/mysql"
 	"github.com/goguardian/fullstack-code-challenge/api/service"
@@ -25,7 +26,7 @@ func main() {
 		return
 	}
 
-	logger.Info("Creating datastore client")
+	log.Println("Creating datastore client")
 	datastoreClient, err := mysql.New(&mysql.Config{
 		DatabaseAddress: conf.DatabaseAddress,
 		ReadTimeout:     conf.DatabaseReadTimeout,

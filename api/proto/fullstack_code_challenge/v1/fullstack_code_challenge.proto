@@ -13,9 +13,7 @@ service FullstackCodeChallenge {
   }
 }
 
-message GetClassroomsAndStudentsRequest {
-  repeated uint32 classroomIDs = 1;
-}
+message GetClassroomsAndStudentsRequest {}
 
 message GetClassroomsAndStudentsResponse {
   map<uint32, Classroom> classrooms = 1;

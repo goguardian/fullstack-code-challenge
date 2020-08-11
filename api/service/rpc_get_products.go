@@ -6,18 +6,18 @@ import (
 	"log"
 	"net/http"
 
-	gw "github.com/goguardian/fullstack-code-challenge/proto/gen/go/fullstack_code_challenge/v1"
+	gw "github.com/goguardian/fullstack-code-challenge/api/proto/gen/go/fullstack_code_challenge/v1"
 )
 
-func (s *service) GetClassroomsAndStudents(ctx context.Context, req *pb.GetClassroomsAndStudentsRequest) (*pb.GetClassroomsAndStudentsResponse, error) {
-	classrooms, err := s.datastoreClient.ListClassroomsAndStudents(ctx, nil)
+func (s *service) GetClassroomsAndStudents(ctx context.Context, req *gw.GetClassroomsAndStudentsRequest) (*gw.GetClassroomsAndStudentsResponse, error) {
+	classrooms, err := s.datastoreClient.ListClassroomsAndStudents(ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New(http.StatusText(http.StatusInternalServerError))
 	}
 
-	res := &pb.GetClassroomsAndStudentsResponse{
-		Classrooms: make(map[uint32]*pb.Classroom, len(classrooms)),
+	res := &gw.GetClassroomsAndStudentsResponse{
+		Classrooms: make(map[uint32]*gw.Classroom, len(classrooms)),
 	}
 
 	for _, classroom := range classrooms {

@@ -1,2 +1,3 @@
 .vscode/
-fullstack-code-challenge
+api
+proto/gen/

@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 
-	gw "github.com/goguardian/fullstack-code-challenge/proto/gen/go/fullstack_code_challenge/v1"
+	gw "github.com/goguardian/fullstack-code-challenge/api/proto/gen/go/fullstack_code_challenge/v1"
 
 	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore"
 )

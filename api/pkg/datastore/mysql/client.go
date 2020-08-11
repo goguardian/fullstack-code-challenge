@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/goguardian/fullstack-code-challenge/api/pkg/datastore"
@@ -41,7 +40,7 @@ type client struct {
 	readTimeout time.Duration
 }
 
-func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []uint64) ([]datastore.Classroom, error) {
+func (c *client) ListClassroomsAndStudents(ctx context.Context) ([]datastore.Classroom, error) {
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, c.readTimeout)
 	defer cancel()
@@ -53,19 +52,9 @@ func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []u
 		classroom_students.name AS studentName
 		FROM classrooms LEFT JOIN classroom_students ON classrooms.id = classroom_students.classroom_id`
 
-	if len(classroomIDs) > 0 {
-		query = fmt.Sprintf("%s WHERE classrooms.id IN (?)")
-	}
-
-	int32ClassroomIDs := make([]int32, len(classroomIDs))
-	for i, classroomID := range classroomIDs {
-		int32ClassroomIDs[i] = int32(classroomID)
-	}
-
 	rows, err := c.mysqlClient.QueryContext(
 		timeoutCtx,
 		query,
-		classroomIDs,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "error listing classrooms and students")
@@ -87,7 +76,7 @@ func (c *client) ListClassroomsAndStudents(ctx context.Context, classroomIDs []u
 		classroomsMap[classroomID] = classroomName
 
 		if students, found := classroomStudentsMap[classroomID]; found {
-			students = append(students, datastore.Student{
+			classroomStudentsMap[classroomID] = append(students, datastore.Student{
 				ID:   uint64(studentID),
 				Name: studentName,
 			})

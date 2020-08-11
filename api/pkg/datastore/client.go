@@ -8,7 +8,7 @@ import (
 type Client interface {
 	// ListClassroomsAndStudents returns classrooms matching the classroomIDs parameter. If the
 	// provided argument is empty or nil, it returns all classrooms.
-	ListClassroomsAndStudents(ctx context.Context, classroomIDs []uint64) ([]Classroom, error)
+	ListClassroomsAndStudents(ctx context.Context) ([]Classroom, error)
 }
 
 // Student represents a GoGuardian student.

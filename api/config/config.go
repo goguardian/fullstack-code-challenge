@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 // Config represents the runtime configuration for the service.
@@ -11,7 +12,7 @@ var Config *configuration
 
 type configuration struct {
 	DatabaseAddress     string
-	DatabaseReadTimeout int
+	DatabaseReadTimeout time.Duration
 
 	GRPCListenPort    uint
 	GRPCListenAddress string
@@ -26,7 +27,7 @@ type configuration struct {
 func init() {
 	Config = &configuration{
 		DatabaseAddress:     getEnvOrDefault("DATABASE_ADDRESS", ""),
-		DatabaseReadTimeout: getEnvIntOrDefault("DATABASE_READ_TIMEOUT", 10),
+		DatabaseReadTimeout: time.Duration(getEnvIntOrDefault("DATABASE_READ_TIMEOUT", 10)) * time.Second,
 
 		GRPCListenAddress: getEnvOrDefault("GRPC_LISTEN_ADDRESS", "grpc://fullstack-code-challenge"),
 		GRPCListenPort:    uint(getEnvIntOrDefault("GRPC_LISTEN_PORT", 8889)),

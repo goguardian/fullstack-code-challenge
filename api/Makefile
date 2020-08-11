@@ -1,14 +1,10 @@
 SHELL := /bin/bash
 
 BUILD_DIR := $(HOME)/fullstack-code-challenge/api
-GENERATED_DIR := $(HOME)/fullstack-code-challenge/api/proto
+GENERATED_DIR := $(HOME)/fullstack-code-challenge/api/proto/gen/go
 GW_DIR := $(GENERATED_DIR)/gateways
-PROTO_DIR := $(HOME)/fullstack-code-challenge/proto
+PROTO_DIR := $(HOME)/fullstack-code-challenge/api/proto
 MODULE_DEPS_DIR := ../module-dependencies
-
-GIT_TAG := $(shell git rev-parse --short HEAD 2> /dev/null)
-BUILD_TAG := $(if $(BUILD_TAG),$(BUILD_TAG),goguardian/fullstack-code-challenge:$(GIT_TAG))
-GOROOT := $(shell go env GOROOT)
 
 print-%: ; @echo $*=$($*)
 
@@ -19,34 +15,30 @@ deps:
 	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger && \
 	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 
-grpc: clean
-		$(info --- Building gRPC service definitions) \
-		cd $(MODULE_DEPS_DIR) && \
-		mkdir -p "$(GENERATED_DIR)" && \
-		protoc \
-			-I=$(PROTO_DIR) \
-			-I=$(PROTO_DIR)/third-party \
-			--go_out=plugins=grpc:"$(GENERATED_DIR)" \
-			--swagger_out=logtostderr=true:"$(GENERATED_DIR)" \
-			$(PROTO_DIR)/fullstack-code-challenge.proto && \
-		\
-		mkdir -p "$(GW_DIR)" && \
-		protoc \
-			-I=$(PROTO_DIR) \
-			-I=$(PROTO_DIR)/third-party \
-			--grpc-gateway_out=logtostderr=true:"$(GW_DIR)" \
-			--swagger_out=logtostderr=true:"$(GW_DIR)" \
-			$(PROTO_DIR)/fullstack-code-challenge.proto
+grpc:
+	$(info --- Building gRPC service definitions) \
+	mkdir -p "$(GENERATED_DIR)" && \
+	protoc \
+		-I=$(PROTO_DIR) \
+		-I=$(PROTO_DIR)/third-party \
+		--go_out=plugins=grpc:"$(GENERATED_DIR)" \
+		--swagger_out=logtostderr=true:"$(GENERATED_DIR)" \
+		$(PROTO_DIR)/fullstack_code_challenge/v1/fullstack_code_challenge.proto && \
+	\
+	mkdir -p "$(GW_DIR)" && \
+	protoc \
+		-I=$(PROTO_DIR) \
+		-I=$(PROTO_DIR)/third-party \
+		--grpc-gateway_out=logtostderr=true:"$(GENERATED_DIR)" \
+		--swagger_out=logtostderr=true:"$(GENERATED_DIR)" \
+		$(PROTO_DIR)/fullstack_code_challenge/v1/fullstack_code_challenge.proto
 
 clean:
 	rm -rf $(GENERATED_DIR)
 
 install: deps grpc
 
-timezones:
-	cp $(GOROOT)/lib/time/zoneinfo.zip $(BUILD_DIR)
-
-binary: timezones deps
+binary: deps
 	$(info --- Building golang binary)
 	cd $(BUILD_DIR) && CGO_ENABLED=0 GOOS=linux go build -mod=readonly -v -a -installsuffix cgo -o go-grpc .
 
