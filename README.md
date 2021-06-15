@@ -1,14 +1,15 @@
 # Fullstack Code Challenge
 A small stack consisting of:
-- MySQL database
-- Golang API (using grpc-gateway)
+- MySQL database (found in `/database`)
+- Golang API (using grpc-gateway, found in `/api`) 
 - React UI
 
 It allows a user to see a list of classrooms and the students contained therein.
 
 ## Dependencies
-- docker (for running these services locally)
-- protoc (for translating `.proto` files into go code)
+- `git`
+- `docker-compose` (for running these services locally)
+- `protoc` (for translating `.proto` files into go code)
 
 ## Challenge
 Users are interested in seeing additional metadata about each student. We've decided to include an additional field, "email" (assume that we can backfill this information easily -- i.e. we'll make them up during this exercise) on each student object. In order to display emails to the end user, we must:
